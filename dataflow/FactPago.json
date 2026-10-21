@@ -33,7 +33,15 @@
 					"name": "DimMetodoPago"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DestinoFactPago",
+						"type": "DatasetReference"
+					},
+					"name": "DestinoFactPago"
+				}
+			],
 			"transformations": [
 				{
 					"name": "DataConversion"
@@ -105,7 +113,9 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> DimMetodoPago",
 				"FactPago cast(output(",
-				"          id as long",
+				"          id as integer,",
+				"          IdMetodoPago as integer,",
+				"          IdEmpleado as integer",
 				"     ),",
 				"     errors: true) ~> DataConversion",
 				"DataConversion, DimTiempo lookup(FechaPago == Fecha,",
@@ -143,15 +153,45 @@
 				"     pickup: 'any',",
 				"     broadcast: 'auto')~> LookupDimMetodoPago",
 				"LookupDimMetodoPago select(mapColumn(",
+				"          id = Limpieza2@id,",
 				"          NumeroDocumento,",
 				"          TipoDocumento,",
-				"          IdMetodoPago,",
 				"          Monto,",
 				"          idTiempo,",
-				"          id",
+				"          idEmpleado,",
+				"          idMetodoPago = DimMetodoPago@id",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> Limpieza3"
+				"     skipDuplicateMapOutputs: true) ~> Limpieza3",
+				"Limpieza3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as long,",
+				"          Monto as decimal(10,2),",
+				"          idTiempo as long,",
+				"          idEmpleado as long,",
+				"          idMetodoPago as long,",
+				"          PagoID as integer,",
+				"          NumeroDocumento as string,",
+				"          TipoDocumento as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          PagoID = id,",
+				"          Monto,",
+				"          idTiempo,",
+				"          idEmpleado,",
+				"          idMetodoPago,",
+				"          NumeroDocumento,",
+				"          TipoDocumento",
+				"     )) ~> DestinoFactPago"
 			]
 		}
 	}
