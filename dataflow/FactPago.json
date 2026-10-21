@@ -1,0 +1,158 @@
+{
+	"name": "FactPago",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "O_FactPago",
+						"type": "DatasetReference"
+					},
+					"name": "FactPago"
+				},
+				{
+					"dataset": {
+						"referenceName": "D_DimTiempo",
+						"type": "DatasetReference"
+					},
+					"name": "DimTiempo"
+				},
+				{
+					"dataset": {
+						"referenceName": "D_DimEmpleado",
+						"type": "DatasetReference"
+					},
+					"name": "DimEmpleado"
+				},
+				{
+					"dataset": {
+						"referenceName": "D_DimMetodoPago",
+						"type": "DatasetReference"
+					},
+					"name": "DimMetodoPago"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "DataConversion"
+				},
+				{
+					"name": "LookupDimTiempo"
+				},
+				{
+					"name": "Limpieza1"
+				},
+				{
+					"name": "LookupDimEmpleado"
+				},
+				{
+					"name": "Limpieza2"
+				},
+				{
+					"name": "LookupDimMetodoPago"
+				},
+				{
+					"name": "Limpieza3"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as long,",
+				"          NumeroDocumento as string,",
+				"          TipoDocumento as string,",
+				"          FechaPago as date,",
+				"          IdMetodoPago as long,",
+				"          IdEmpleado as long,",
+				"          Monto as decimal(10,2)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT\\n    mp.id,\\n\\n    CASE\\n        WHEN mc.facturaid_id IS NOT NULL\\n            THEN CAST(f.NumFactura AS VARCHAR(30))\\n\\n        WHEN mc.facturaCreditoId_id IS NOT NULL\\n            THEN CAST(fcredito.NumFactura AS VARCHAR(30))\\n\\n        WHEN mc.compraid_id IS NOT NULL\\n            THEN CAST(c.NumCompra AS VARCHAR(30))\\n\\n        WHEN mc.compraCreditoId_id IS NOT NULL\\n            THEN CAST(ccredito.NumCompra AS VARCHAR(30))\\n\\n        ELSE NULL\\n    END AS NumeroDocumento,\\n\\n    CASE\\n        WHEN mc.facturaid_id IS NOT NULL\\n            THEN \\'FACTURA\\'\\n\\n        WHEN mc.facturaCreditoId_id IS NOT NULL\\n            THEN \\'FACTURA\\'\\n\\n        WHEN mc.compraid_id IS NOT NULL\\n            THEN \\'COMPRA\\'\\n\\n        WHEN mc.compraCreditoId_id IS NOT NULL\\n            THEN \\'COMPRA\\'\\n\\n        ELSE NULL\\n    END AS TipoDocumento,\\n\\n    CAST(mc.fecha AS DATE) AS FechaPago,\\n\\n    mp.metodoPagoId_id AS IdMetodoPago,\\n\\n    e.id AS IdEmpleado,\\n\\n    mp.monto AS Monto\\n\\nFROM movimientoPago_movimientopago mp\\n\\nINNER JOIN caja_movimientocaja mc\\n    ON mp.MovimientoCajaId_id = mc.id\\n\\nLEFT JOIN factura_facturas f\\n    ON mc.facturaid_id = f.id\\n\\nLEFT JOIN factura_facturascredito fc\\n    ON mc.facturaCreditoId_id = fc.id\\n\\nLEFT JOIN factura_facturas fcredito\\n    ON fc.FacturaId_id = fcredito.id\\n\\nLEFT JOIN compra_compras c\\n    ON mc.compraid_id = c.id\\n\\nLEFT JOIN compra_comprascredito cc\\n    ON mc.compraCreditoId_id = cc.id\\n\\nLEFT JOIN compra_compras ccredito\\n    ON cc.CompraId_id = ccredito.id\\n\\nINNER JOIN caja_turnocaja tc\\n    ON mc.turnoCajaId_id = tc.id\\n\\nINNER JOIN empleados_empleados e\\n    ON tc.EmpleadoId_id = e.id',",
+				"     format: 'query') ~> FactPago",
+				"source(output(",
+				"          id as long,",
+				"          Fecha as date,",
+				"          Dia as integer,",
+				"          Mes as integer,",
+				"          Year as integer,",
+				"          Trimestre as string,",
+				"          NombreDia as string,",
+				"          NombreMes as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimTiempo",
+				"source(output(",
+				"          id as long,",
+				"          NombreCompleto as string,",
+				"          EmpleadoID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimEmpleado",
+				"source(output(",
+				"          id as long,",
+				"          TipoMetodoPago as string,",
+				"          MetodoID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimMetodoPago",
+				"FactPago cast(output(",
+				"          id as long",
+				"     ),",
+				"     errors: true) ~> DataConversion",
+				"DataConversion, DimTiempo lookup(FechaPago == Fecha,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> LookupDimTiempo",
+				"LookupDimTiempo select(mapColumn(",
+				"          id = DataConversion@id,",
+				"          NumeroDocumento,",
+				"          TipoDocumento,",
+				"          IdMetodoPago,",
+				"          IdEmpleado,",
+				"          Monto,",
+				"          idTiempo = DimTiempo@id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Limpieza1",
+				"Limpieza1, DimEmpleado lookup(IdEmpleado == EmpleadoID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> LookupDimEmpleado",
+				"LookupDimEmpleado select(mapColumn(",
+				"          id = Limpieza1@id,",
+				"          NumeroDocumento,",
+				"          TipoDocumento,",
+				"          IdMetodoPago,",
+				"          Monto,",
+				"          idTiempo,",
+				"          idEmpleado = DimEmpleado@id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Limpieza2",
+				"Limpieza2, DimMetodoPago lookup(IdMetodoPago == MetodoID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> LookupDimMetodoPago",
+				"LookupDimMetodoPago select(mapColumn(",
+				"          NumeroDocumento,",
+				"          TipoDocumento,",
+				"          IdMetodoPago,",
+				"          Monto,",
+				"          idTiempo,",
+				"          id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Limpieza3"
+			]
+		}
+	}
+}

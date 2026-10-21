@@ -1,0 +1,56 @@
+{
+	"name": "DestinoFactPago",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MotoRep_DW",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "Monto",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "idTiempo",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "idEmpleado",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "idMetodoPago",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "PagoID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "NumeroDocumento",
+				"type": "varchar"
+			},
+			{
+				"name": "TipoDocumento",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "FactPago"
+		}
+	}
+}

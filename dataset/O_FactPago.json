@@ -1,0 +1,46 @@
+{
+	"name": "O_FactPago",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MotoRepSystem_Conexion",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "monto",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "estado",
+				"type": "bit"
+			},
+			{
+				"name": "MovimientoCajaId_id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "metodoPagoId_id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "MovCaja",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "movimientoPago_movimientopago"
+		}
+	}
+}
