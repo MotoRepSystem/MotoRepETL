@@ -1,0 +1,55 @@
+{
+	"name": "O_DimProducto",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MotoRepSystem_Conexion",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "Codigo",
+				"type": "nvarchar"
+			},
+			{
+				"name": "estado",
+				"type": "bit"
+			},
+			{
+				"name": "ColorId_id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "MarcaId_id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "MotoId_id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "producto_id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "size_id",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "producto_detalleproductos"
+		}
+	}
+}

@@ -1,0 +1,701 @@
+{
+	"name": "MotoRepSystem_ETL",
+	"properties": {
+		"description": "Carga de las dimensiones de MotoRep Sistema Web",
+		"activities": [
+			{
+				"name": "Limpieza de tablas",
+				"type": "Script",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "MotoRep_DW",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "\ntruncate table FactVenta;\ntruncate table FactCompra;\ntruncate table FactPago;\n\ndelete from DimCliente;\ndelete from DimCondicionPago;\ndelete from DimEmpleado;\ndelete from DimMetodoPago;\ndelete from DimProducto;\ndelete from DimProveedor;\ndelete from DimTiempo;\n\n\nDBCC CHECKIDENT ('DimCliente', RESEED, 0);\nDBCC CHECKIDENT ('DimCondicionPago', RESEED, 0);\nDBCC CHECKIDENT ('DimEmpleado', RESEED, 0);\nDBCC CHECKIDENT ('DimMetodoPago', RESEED, 0);\nDBCC CHECKIDENT ('DimProducto', RESEED, 0);\nDBCC CHECKIDENT ('DimProveedor', RESEED, 0);\n\n\n"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "DimTiempo",
+				"description": "Carga de datos de la dimensión Tiempo",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "Limpieza de tablas",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "MotoRep_DW",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "SET LANGUAGE Español;\n\nDECLARE @StartDate DATE = '2021-06-15';\nDECLARE @EndDate DATE = '2026-11-01';\n\nWITH ListaFechas AS (\n    SELECT @StartDate AS Fecha\n    UNION ALL\n    SELECT DATEADD(day, 1, Fecha)\n    FROM ListaFechas\n    WHERE Fecha < @EndDate\n)\n\nINSERT INTO DimTiempo (id, Fecha, Year, Mes, NombreMes, Trimestre, Dia, NombreDia)\nSELECT\n    YEAR(Fecha) * 10000 + MONTH(Fecha) * 100 + DAY(Fecha),\n    Fecha,\n    YEAR(Fecha),\n    MONTH(Fecha),\n    DATENAME(month, Fecha),\n    DATEPART(quarter, Fecha),\n    DAY(Fecha),             -- <-- Cambiado aquí para obtener el día del mes\n    DATENAME(weekday, Fecha)\nFROM ListaFechas\nOPTION (MAXRECURSION 0);"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "DimCliente",
+				"description": "Carga de datos de la dimensión Cliente",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DimTiempo",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT        id, Nombres + ' ' + Apellidos AS NombreCompleto\nFROM            dbo.clientes_clientes",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"ClienteID"
+							]
+						},
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "id",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "ClienteID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "NombreCompleto",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "NombreCompleto",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Origen_DimCliente",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "D_DimCliente",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "DimCondicionPago",
+				"description": "Carga de datos de la dimensión Condición de pago",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DimCliente",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT        id, descripcion\nFROM            dbo.condicionPago_condicionpago",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"CondicionID"
+							]
+						},
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "id",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "CondicionID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "descripcion",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "CondicionPago",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "O_DimCondicionPago",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "D_DimCondicionPago",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "DimMetodoPago",
+				"description": "Carga de la dimensión MetodoPago",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DimCondicionPago",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT        id, Tipo\nFROM            dbo.metodoPago_metodopago",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"MetodoID"
+							]
+						},
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "id",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "MetodoID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Tipo",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "TipoMetodoPago",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "O_DimMetodoPago",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "D_DimMetodoPago",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "DimEmpleado",
+				"description": "Carga de la Dimensión Empleado",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DimMetodoPago",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT        id, Nombres + ' ' + Apellidos AS NombreCompleto\nFROM            dbo.empleados_empleados",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"EmpleadoID"
+							]
+						},
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "id",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "EmpleadoID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "NombreCompleto",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "NombreCompleto",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "O_DimEmpleado",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "D_DimEmpleado",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "DimProveedor",
+				"description": "Carga de la dimensión Proveedor",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DimEmpleado",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT        id, Nombre\nFROM            dbo.proveedor_proveedores",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"ProveedorID"
+							]
+						},
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "id",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "ProveedorID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Nombre",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "Nombre",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "O_DimProveedor",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "D_DimProveedor",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "DimProducto",
+				"description": "Carga de la dimensión Producto",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DimProveedor",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "Select dp.id,\n\t\tc.Nombre AS Categoria,\n\t\tp.Nombre AS Producto,\n\t\tm.Nombre AS Marca,\n\t\tmm.Nombre AS MotoMarca,\n\t\tmo.Modelo AS Moto,\n\t\tISNULL(cp.Color, '') AS Color,\n\t\tISNULL(sz.Tamaño, '') AS Tamaño\n\t\t\n\t\t\n\nfrom producto_detalleproductos AS dp\nINNER JOIN producto_productos AS p ON dp.producto_id = p.id\nINNER JOIN marca_marcas AS m ON dp.MarcaId_id = m.id\nINNER JOIN moto_motos AS mo ON dp.MotoId_id = mo.id\nINNER JOIN categoria_categorias AS c ON p.CategoriaId_id = c.id\nLEFT JOIN ColorProducto_colorproducto AS cp ON dp.ColorId_id = cp.id\nLEFT JOIN size_size AS sz ON dp.size_id = sz.id\nINNER JOIN marca_marcas AS mm ON mo.MarcaId_id = mm.id",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"ProductoID"
+							]
+						},
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "id",
+									"type": "Int64",
+									"physicalType": "bigint"
+								},
+								"sink": {
+									"name": "ProductoID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Producto",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "Producto",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Categoria",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "Categoria",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Marca",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "MarcaProducto",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Moto",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "Moto",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "MotoMarca",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "MarcaMoto",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Color",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "Color",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Tamaño",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "Tamaño",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "O_DimProducto",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "D_DimProducto",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "FactCompra",
+				"description": "Carga de la tabla de hechos Compra",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "DimProducto",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DFT_FactCompra",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": []
+	}
+}

@@ -1,0 +1,15 @@
+{
+	"name": "DFT_FactCompra",
+	"properties": {
+		"description": "Flujo de datos de la FactCompra",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				""
+			]
+		}
+	}
+}

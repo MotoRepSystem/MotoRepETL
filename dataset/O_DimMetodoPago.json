@@ -1,0 +1,30 @@
+{
+	"name": "O_DimMetodoPago",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MotoRepSystem_Conexion",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "Tipo",
+				"type": "nvarchar"
+			},
+			{
+				"name": "estado",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "metodoPago_metodopago"
+		}
+	}
+}

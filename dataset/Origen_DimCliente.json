@@ -1,0 +1,46 @@
+{
+	"name": "Origen_DimCliente",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MotoRepSystem_Conexion",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "Nombres",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Apellidos",
+				"type": "nvarchar"
+			},
+			{
+				"name": "NumCedula",
+				"type": "nvarchar"
+			},
+			{
+				"name": "NumTeléfono",
+				"type": "nvarchar"
+			},
+			{
+				"name": "estado",
+				"type": "bit"
+			},
+			{
+				"name": "syncId",
+				"type": "char"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "clientes_clientes"
+		}
+	}
+}
