@@ -1,0 +1,68 @@
+{
+	"name": "DestinoFactCompra",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MotoRep_DW",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "NumCompra",
+				"type": "varchar"
+			},
+			{
+				"name": "Cantidad",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PrecioUnitario",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "Subtotal",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "idTiempo",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "idProducto",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "idCondicionPago",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "idProveedor",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "CompraID",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "FactCompra"
+		}
+	}
+}

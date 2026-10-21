@@ -27,9 +27,31 @@
 					},
 					"name": "DimProveedor",
 					"description": "Traer la dimensión Proveedor"
+				},
+				{
+					"dataset": {
+						"referenceName": "D_DimCondicionPago",
+						"type": "DatasetReference"
+					},
+					"name": "DimCondicionPago"
+				},
+				{
+					"dataset": {
+						"referenceName": "D_DimProducto",
+						"type": "DatasetReference"
+					},
+					"name": "DimProducto"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DestinoFactCompra",
+						"type": "DatasetReference"
+					},
+					"name": "DestinoFactCompra"
+				}
+			],
 			"transformations": [
 				{
 					"name": "ConversionDatos"
@@ -39,8 +61,26 @@
 					"description": "Comparar los datos de origen con la dimensión Tiempo"
 				},
 				{
-					"name": "lookupDimProveedor",
+					"name": "LookupDimProveedor",
 					"description": "Comparar los datos de origen con la dimensión Tiempo"
+				},
+				{
+					"name": "Limpieza1"
+				},
+				{
+					"name": "Limpieza2"
+				},
+				{
+					"name": "LookupDinCondicionPago"
+				},
+				{
+					"name": "Limpieza3"
+				},
+				{
+					"name": "LookupDimProducto"
+				},
+				{
+					"name": "Limpieza4"
 				}
 			],
 			"scriptLines": [
@@ -85,6 +125,30 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> DimProveedor",
+				"source(output(",
+				"          id as long,",
+				"          CondicionPago as string,",
+				"          CondicionID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimCondicionPago",
+				"source(output(",
+				"          id as long,",
+				"          Producto as string,",
+				"          Categoria as string,",
+				"          MarcaProducto as string,",
+				"          Moto as string,",
+				"          MarcaMoto as string,",
+				"          Color as string,",
+				"          {Tamaño} as string,",
+				"          ProductoID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimProducto",
 				"FactCompra cast(output(",
 				"          id as integer,",
 				"          Proveedor as integer,",
@@ -96,10 +160,104 @@
 				"     multiple: false,",
 				"     pickup: 'any',",
 				"     broadcast: 'auto')~> LookupDimTiempo",
-				"LookupDimTiempo, DimProveedor lookup(Proveedor == ProveedorID,",
+				"Limpieza1, DimProveedor lookup(Proveedor == ProveedorID,",
 				"     multiple: false,",
 				"     pickup: 'any',",
-				"     broadcast: 'auto')~> lookupDimProveedor"
+				"     broadcast: 'auto')~> LookupDimProveedor",
+				"LookupDimTiempo select(mapColumn(",
+				"          id = ConversionDatos@id,",
+				"          NumeroCompra,",
+				"          Proveedor,",
+				"          Producto,",
+				"          Cantidad,",
+				"          PrecioUnitario,",
+				"          Subtotal,",
+				"          CondicionPago,",
+				"          idTiempo = DimTiempo@id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Limpieza1",
+				"LookupDimProveedor select(mapColumn(",
+				"          id = Limpieza1@id,",
+				"          NumeroCompra,",
+				"          Producto,",
+				"          Cantidad,",
+				"          PrecioUnitario,",
+				"          Subtotal,",
+				"          CondicionPago,",
+				"          idTiempo,",
+				"          idProveedor = DimProveedor@id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Limpieza2",
+				"Limpieza2, DimCondicionPago lookup(Limpieza2@CondicionPago == CondicionID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> LookupDinCondicionPago",
+				"LookupDinCondicionPago select(mapColumn(",
+				"          id = Limpieza2@id,",
+				"          NumeroCompra,",
+				"          Producto,",
+				"          Cantidad,",
+				"          PrecioUnitario,",
+				"          Subtotal,",
+				"          idTiempo,",
+				"          idProveedor,",
+				"          idCondicionPago = DimCondicionPago@id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Limpieza3",
+				"Limpieza3, DimProducto lookup(Limpieza3@Producto == ProductoID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> LookupDimProducto",
+				"LookupDimProducto select(mapColumn(",
+				"          id = Limpieza3@id,",
+				"          NumeroCompra,",
+				"          Cantidad,",
+				"          PrecioUnitario,",
+				"          Subtotal,",
+				"          idTiempo,",
+				"          idProveedor,",
+				"          idCondicionPago,",
+				"          idProducto = DimProducto@id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Limpieza4",
+				"Limpieza4 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as long,",
+				"          NumCompra as string,",
+				"          Cantidad as integer,",
+				"          PrecioUnitario as decimal(10,2),",
+				"          Subtotal as decimal(10,2),",
+				"          idTiempo as long,",
+				"          idProducto as long,",
+				"          idCondicionPago as long,",
+				"          idProveedor as long,",
+				"          CompraID as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          NumCompra = NumeroCompra,",
+				"          Cantidad,",
+				"          PrecioUnitario,",
+				"          Subtotal,",
+				"          idTiempo,",
+				"          idProveedor,",
+				"          idCondicionPago,",
+				"          idProducto,",
+				"          CompraID = id",
+				"     )) ~> DestinoFactCompra"
 			]
 		}
 	}
