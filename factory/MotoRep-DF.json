@@ -1,0 +1,15 @@
+{
+	"name": "MotoRep-DF",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "centralus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "ee88379b-18a1-4828-9986-22b97b749e0b",
+		"tenantId": "e47646fe-da27-4518-8436-5f8b158ba127"
+	}
+}
