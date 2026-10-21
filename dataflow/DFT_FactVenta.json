@@ -1,0 +1,146 @@
+{
+	"name": "DFT_FactVenta",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "O_FactVenta",
+						"type": "DatasetReference"
+					},
+					"name": "FactVenta"
+				},
+				{
+					"dataset": {
+						"referenceName": "D_DimTiempo",
+						"type": "DatasetReference"
+					},
+					"name": "DimTiempo"
+				},
+				{
+					"dataset": {
+						"referenceName": "D_DimCliente",
+						"type": "DatasetReference"
+					},
+					"name": "DimCliente"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "DataConversion"
+				},
+				{
+					"name": "LookupDimTiempo"
+				},
+				{
+					"name": "Limpieza1"
+				},
+				{
+					"name": "LookupDimCliente"
+				},
+				{
+					"name": "Limpieza2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as long,",
+				"          NumFactura as integer,",
+				"          FechaVenta as string,",
+				"          Cliente as long,",
+				"          CondicionPago as long,",
+				"          Producto as long,",
+				"          Cantidad as integer,",
+				"          PrecioUnitario as decimal(7,2),",
+				"          Subtotal as decimal(7,2),",
+				"          precioCosto as decimal(10,2),",
+				"          Costototal as decimal(21,2),",
+				"          Utilidad as decimal(22,2),",
+				"          Empleado as long",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT     df.id,\\n          f.NumFactura,\\n          f.Fecha AS FechaVenta,\\n          f.ClienteId_id AS Cliente,\\n          f.condicionId_id AS CondicionPago,\\n          dc.DetalleProductoId_id AS Producto,\\n          df.Cantidad,\\n          df.PrecioUnitario,\\n          df.Subtotal,\\n          rp.precioCosto,\\n          (df.Cantidad * rp.precioCosto) AS Costototal,\\n          (df.Subtotal - (df.Cantidad * rp.precioCosto)) AS Utilidad,\\n          tc.EmpleadoId_id AS Empleado\\n          \\n\\nFROM factura_facturas AS f\\n\\nINNER JOIN factura_detallefactura AS df ON f.id = df.FacturaId_id\\nINNER JOIN producto_registroproducto AS rp ON df.loteId_id = rp.id\\nINNER JOIN compra_detallecompra AS dc ON rp.DetalleCompraId_id = dc.id\\nINNER JOIN producto_detalleproductos AS dp ON dc.DetalleProductoId_id = dp.id\\nLEFT JOIN dbo.factura_facturascredito AS fc ON fc.FacturaId_id = F.id\\nOUTER APPLY \\n(\\n     SELECT TOP 1\\n          tc1.EmpleadoId_id\\n     FROM caja_movimientocaja AS mc\\n     INNER JOIN caja_turnocaja AS tc1 ON mc.turnoCajaId_id = tc1.id\\n     WHERE mc.facturaid_id = f.id OR mc.facturaCreditoId_id = fc.id\\n     ORDER BY \\n     CASE\\n            WHEN MC.facturaCreditoId_id = FC.id THEN 0\\n            ELSE 1\\n        END,\\n          mc.id\\n) AS tc',",
+				"     format: 'query') ~> FactVenta",
+				"source(output(",
+				"          id as long,",
+				"          Fecha as date,",
+				"          Dia as integer,",
+				"          Mes as integer,",
+				"          Year as integer,",
+				"          Trimestre as string,",
+				"          NombreDia as string,",
+				"          NombreMes as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimTiempo",
+				"source(output(",
+				"          id as long,",
+				"          NombreCompleto as string,",
+				"          ClienteID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimCliente",
+				"FactVenta cast(output(",
+				"          id as integer,",
+				"          FechaVenta as date,",
+				"          Cliente as integer,",
+				"          CondicionPago as integer,",
+				"          Producto as integer,",
+				"          Empleado as integer",
+				"     ),",
+				"     errors: true) ~> DataConversion",
+				"DataConversion, DimTiempo lookup(FechaVenta == Fecha,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> LookupDimTiempo",
+				"LookupDimTiempo select(mapColumn(",
+				"          id = DataConversion@id,",
+				"          NumFactura,",
+				"          Cliente,",
+				"          CondicionPago,",
+				"          Producto,",
+				"          Cantidad,",
+				"          PrecioUnitario,",
+				"          Subtotal,",
+				"          precioCosto,",
+				"          Costototal,",
+				"          Utilidad,",
+				"          Empleado,",
+				"          idTiempo = DimTiempo@id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Limpieza1",
+				"Limpieza1, DimCliente lookup(Cliente == ClienteID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> LookupDimCliente",
+				"LookupDimCliente select(mapColumn(",
+				"          id = Limpieza1@id,",
+				"          NumFactura,",
+				"          Cliente,",
+				"          CondicionPago,",
+				"          Producto,",
+				"          Cantidad,",
+				"          PrecioUnitario,",
+				"          Subtotal,",
+				"          precioCosto,",
+				"          Costototal,",
+				"          Utilidad,",
+				"          Empleado,",
+				"          idTiempo,",
+				"          idCliente = DimCliente@id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Limpieza2"
+			]
+		}
+	}
+}

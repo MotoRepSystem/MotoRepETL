@@ -1,0 +1,53 @@
+{
+	"name": "O_FactVenta",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MotoRepSystem_Conexion",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "Cantidad",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PrecioUnitario",
+				"type": "decimal",
+				"precision": 7,
+				"scale": 2
+			},
+			{
+				"name": "Subtotal",
+				"type": "decimal",
+				"precision": 7,
+				"scale": 2
+			},
+			{
+				"name": "estado",
+				"type": "bit"
+			},
+			{
+				"name": "FacturaId_id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "loteId_id",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "factura_detallefactura"
+		}
+	}
+}
