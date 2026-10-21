@@ -1,0 +1,86 @@
+{
+	"name": "D_FactVenta",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MotoRep_DW",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "NumFactura",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Cantidad",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PrecioUnitario",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "Subtotal",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "CostoTotal",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "Utilidad",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "idTiempo",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "idProducto",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "idEmpleado",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "idCliente",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "idCondicionPago",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "VentaID",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "FactVenta"
+		}
+	}
+}

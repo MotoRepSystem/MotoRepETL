@@ -24,9 +24,38 @@
 						"type": "DatasetReference"
 					},
 					"name": "DimCliente"
+				},
+				{
+					"dataset": {
+						"referenceName": "D_DimCondicionPago",
+						"type": "DatasetReference"
+					},
+					"name": "DimCondicionPago"
+				},
+				{
+					"dataset": {
+						"referenceName": "D_DimEmpleado",
+						"type": "DatasetReference"
+					},
+					"name": "DimEmpleado"
+				},
+				{
+					"dataset": {
+						"referenceName": "D_DimProducto",
+						"type": "DatasetReference"
+					},
+					"name": "DimProducto"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "D_FactVenta",
+						"type": "DatasetReference"
+					},
+					"name": "DestinoFactVenta"
+				}
+			],
 			"transformations": [
 				{
 					"name": "DataConversion"
@@ -42,6 +71,24 @@
 				},
 				{
 					"name": "Limpieza2"
+				},
+				{
+					"name": "LookupDimCondicionPago"
+				},
+				{
+					"name": "Limpieza4"
+				},
+				{
+					"name": "LookupDimEmpleado"
+				},
+				{
+					"name": "Limpieza5"
+				},
+				{
+					"name": "LookupProducto"
+				},
+				{
+					"name": "Limpieza6"
 				}
 			],
 			"scriptLines": [
@@ -88,6 +135,39 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> DimCliente",
+				"source(output(",
+				"          id as long,",
+				"          CondicionPago as string,",
+				"          CondicionID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimCondicionPago",
+				"source(output(",
+				"          id as long,",
+				"          NombreCompleto as string,",
+				"          EmpleadoID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimEmpleado",
+				"source(output(",
+				"          id as long,",
+				"          Producto as string,",
+				"          Categoria as string,",
+				"          MarcaProducto as string,",
+				"          Moto as string,",
+				"          MarcaMoto as string,",
+				"          Color as string,",
+				"          {Tamaño} as string,",
+				"          ProductoID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimProducto",
 				"FactVenta cast(output(",
 				"          id as integer,",
 				"          FechaVenta as date,",
@@ -139,7 +219,110 @@
 				"          idCliente = DimCliente@id",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> Limpieza2"
+				"     skipDuplicateMapOutputs: true) ~> Limpieza2",
+				"Limpieza2, DimCondicionPago lookup(Limpieza2@CondicionPago == CondicionID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> LookupDimCondicionPago",
+				"LookupDimCondicionPago select(mapColumn(",
+				"          id = Limpieza2@id,",
+				"          NumFactura,",
+				"          Producto,",
+				"          Cantidad,",
+				"          PrecioUnitario,",
+				"          Subtotal,",
+				"          precioCosto,",
+				"          Costototal,",
+				"          Utilidad,",
+				"          Empleado,",
+				"          idTiempo,",
+				"          idCliente,",
+				"          idCondicionPago = DimCondicionPago@id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Limpieza4",
+				"Limpieza4, DimEmpleado lookup(Empleado == EmpleadoID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> LookupDimEmpleado",
+				"LookupDimEmpleado select(mapColumn(",
+				"          id = Limpieza4@id,",
+				"          NumFactura,",
+				"          Producto,",
+				"          Cantidad,",
+				"          PrecioUnitario,",
+				"          Subtotal,",
+				"          precioCosto,",
+				"          Costototal,",
+				"          Utilidad,",
+				"          idTiempo,",
+				"          idCliente,",
+				"          idCondicionPago,",
+				"          idEmpleado = DimEmpleado@id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Limpieza5",
+				"Limpieza5, DimProducto lookup(Limpieza5@Producto == ProductoID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> LookupProducto",
+				"LookupProducto select(mapColumn(",
+				"          id = Limpieza5@id,",
+				"          NumFactura,",
+				"          Cantidad,",
+				"          PrecioUnitario,",
+				"          Subtotal,",
+				"          precioCosto,",
+				"          Costototal,",
+				"          Utilidad,",
+				"          idTiempo,",
+				"          idCliente,",
+				"          idCondicionPago,",
+				"          idEmpleado,",
+				"          idProducto = DimProducto@id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Limpieza6",
+				"Limpieza6 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id as long,",
+				"          NumFactura as integer,",
+				"          Cantidad as integer,",
+				"          PrecioUnitario as decimal(10,2),",
+				"          Subtotal as decimal(10,2),",
+				"          CostoTotal as decimal(10,2),",
+				"          Utilidad as decimal(10,2),",
+				"          idTiempo as long,",
+				"          idProducto as long,",
+				"          idEmpleado as long,",
+				"          idCliente as long,",
+				"          idCondicionPago as long,",
+				"          VentaID as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          VentaID = id,",
+				"          NumFactura,",
+				"          Cantidad,",
+				"          PrecioUnitario,",
+				"          Subtotal,",
+				"          CostoTotal = Costototal,",
+				"          Utilidad,",
+				"          idTiempo,",
+				"          idProducto,",
+				"          idEmpleado,",
+				"          idCliente,",
+				"          idCondicionPago",
+				"     )) ~> DestinoFactVenta"
 			]
 		}
 	}
