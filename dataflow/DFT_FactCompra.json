@@ -98,7 +98,6 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     limit: 100,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     query: 'select  dc.id,\\n                                     c.id AS CompraID,\\n          c.Fecha AS FechaCompra,\\n          c.NumCompra AS NumeroCompra,\\n          c.ProveedorId_id AS Proveedor,\\n          dc.DetalleProductoId_id AS Producto,\\n          dc.Cantidad AS Cantidad,\\n          dc.PrecioUnitario AS PrecioUnitario,\\n          dc.Subtotal,\\n          c.CondicionPagoId_id AS CondicionPago\\n          \\n\\nfrom compra_compras AS c\\nINNER JOIN compra_detallecompra AS dc ON c.id = dc.CompraId_id\\nINNER JOIN condicionPago_condicionpago AS cp ON c.CondicionPagoId_id = cp.id\\nINNER JOIN proveedor_proveedores AS p ON c.ProveedorId_id = p.id\\nINNER JOIN producto_detalleproductos as dp ON dc.DetalleProductoId_id = dp.id',",
 				"     format: 'query') ~> FactCompra",
