@@ -5,10 +5,17 @@
 			{
 				"name": "OrigenEncuesta",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Limpieza",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
-					"retry": 0,
+					"retry": 3,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -40,66 +47,118 @@
 							{
 								"source": {
 									"path": "$['_id']['$oid']"
+								},
+								"sink": {
+									"name": "ObjectId",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['cliente_id']"
+								},
+								"sink": {
+									"name": "ClienteID",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['factura_id']"
+								},
+								"sink": {
+									"name": "FacturaID",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['fecha_encuesta']"
+								},
+								"sink": {
+									"name": "FechaEncuesta",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['satisfaccion_servicio']['satisfaccion_general']"
+								},
+								"sink": {
+									"name": "SatisfaccionGeneral",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['satisfaccion_servicio']['atencion_personal']"
+								},
+								"sink": {
+									"name": "AtencionPersonal",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['satisfaccion_servicio']['experiencia_compra']"
+								},
+								"sink": {
+									"name": "ExperienciaCompra",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['preferencias_uso']['facilidad_encontrar_producto']"
+								},
+								"sink": {
+									"name": "FacilidadEncontrar",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['preferencias_uso']['variedad_productos']"
+								},
+								"sink": {
+									"name": "VariedadProductos",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['preferencias_uso']['marca_preferida']"
+								},
+								"sink": {
+									"name": "MarcaPreferida",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['productos_frecuentes'][0]"
+								},
+								"sink": {
+									"name": "ProductosFrecuentes",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['comentario_servicio']"
+								},
+								"sink": {
+									"name": "ComentarioServicio",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['comentario_mejora']"
+								},
+								"sink": {
+									"name": "ComentarioMejora",
+									"type": "String"
 								}
 							}
 						],
@@ -109,13 +168,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Origen_Encuesta",
+						"referenceName": "Origen_Encuesta_Mejorado",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "TBL_TEMP_Encuesta",
+						"referenceName": "Tbl_Encuesta",
 						"type": "DatasetReference"
 					}
 				]
@@ -123,15 +182,31 @@
 			{
 				"name": "OrigenIncidencia",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "OrigenEncuesta",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
-					"retry": 0,
+					"retry": 3,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": [],
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "Incidencia"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.StgIncidencias"
+					}
+				],
 				"typeProperties": {
 					"source": {
 						"type": "CosmosDbMongoDbApiSource",
@@ -142,20 +217,150 @@
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['_id']['$oid']"
+								},
+								"sink": {
+									"name": "ObjectId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['fecha_registro']"
+								},
+								"sink": {
+									"name": "FechaRegistro",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['tipo_incidencia']"
+								},
+								"sink": {
+									"name": "TipoIncidencia",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['origen']['tipo']"
+								},
+								"sink": {
+									"name": "OrigenTipo",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['origen']['cliente_id']"
+								},
+								"sink": {
+									"name": "ClienteID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['detalle_incidencia']['categoria_problema']"
+								},
+								"sink": {
+									"name": "CategoriaProblema",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['detalle_incidencia']['descripcion']"
+								},
+								"sink": {
+									"name": "Descripcion",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['detalle_incidencia']['monto_involucrado']"
+								},
+								"sink": {
+									"name": "MontoInvolucrado",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['gestion']['empleado_id']"
+								},
+								"sink": {
+									"name": "EmpleadoID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['gestion']['prioridad']"
+								},
+								"sink": {
+									"name": "Prioridad",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['evidencia']['url']"
+								},
+								"sink": {
+									"name": "EvidenciaURL",
+									"type": "String"
+								}
+							}
+						]
+					}
 				},
 				"inputs": [
 					{
-						"referenceName": "OrigenIncidencia",
+						"referenceName": "Origen_Incidencias_Mejorado",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "TBL_TEMP_Incidencia",
+						"referenceName": "Tbl_Incidencias",
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "Limpieza",
+				"type": "Script",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "MotoRep_DW",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "truncate table StgEncuestaSatisfaccion;\ntruncate table StgIncidencias;"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
 			}
 		],
 		"annotations": []
