@@ -4,7 +4,7 @@
 		"activities": [
 			{
 				"name": "OrigenEncuesta",
-				"type": "ExecuteDataFlow",
+				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -13,18 +13,112 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": [],
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "clientes"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.StgEncuestaSatisfaccion"
+					}
+				],
 				"typeProperties": {
-					"dataflow": {
-						"referenceName": "DFT_Encuesta",
-						"type": "DataFlowReference"
+					"source": {
+						"type": "CosmosDbMongoDbApiSource",
+						"batchSize": 100
 					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
 					},
-					"traceLevel": "Fine"
-				}
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['_id']['$oid']"
+								}
+							},
+							{
+								"source": {
+									"path": "$['cliente_id']"
+								}
+							},
+							{
+								"source": {
+									"path": "$['factura_id']"
+								}
+							},
+							{
+								"source": {
+									"path": "$['fecha_encuesta']"
+								}
+							},
+							{
+								"source": {
+									"path": "$['satisfaccion_servicio']['satisfaccion_general']"
+								}
+							},
+							{
+								"source": {
+									"path": "$['satisfaccion_servicio']['atencion_personal']"
+								}
+							},
+							{
+								"source": {
+									"path": "$['satisfaccion_servicio']['experiencia_compra']"
+								}
+							},
+							{
+								"source": {
+									"path": "$['preferencias_uso']['facilidad_encontrar_producto']"
+								}
+							},
+							{
+								"source": {
+									"path": "$['preferencias_uso']['variedad_productos']"
+								}
+							},
+							{
+								"source": {
+									"path": "$['preferencias_uso']['marca_preferida']"
+								}
+							},
+							{
+								"source": {
+									"path": "$['productos_frecuentes'][0]"
+								}
+							},
+							{
+								"source": {
+									"path": "$['comentario_servicio']"
+								}
+							},
+							{
+								"source": {
+									"path": "$['comentario_mejora']"
+								}
+							}
+						],
+						"collectionReference": "",
+						"mapComplexValuesToString": false
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Origen_Encuesta",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "TBL_TEMP_Encuesta",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []
