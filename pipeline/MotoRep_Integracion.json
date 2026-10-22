@@ -1,0 +1,423 @@
+{
+	"name": "MotoRep_Integracion",
+	"properties": {
+		"activities": [
+			{
+				"name": "DimPreferenciaMarca",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "dbo.StgEncuestaSatisfaccion"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.DimPreferenciaMarca"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT DISTINCT\n    LTRIM(RTRIM(MarcaPreferida)) AS Marcas\nFROM dbo.StgEncuestaSatisfaccion\nWHERE NULLIF(LTRIM(RTRIM(MarcaPreferida)), '') IS NOT NULL;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Marcas",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Marcas",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "TBL_TEMP_Encuesta",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "O_DimPreferenciaMarca",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "DimTipoIncidencia",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DimPreferenciaMarca",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "dbo.StgIncidencias"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.DimTipoIncidencia"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT DISTINCT\n    LTRIM(RTRIM(TipoIncidencia)) AS TipoDescripcion\nFROM dbo.StgIncidencias\nWHERE NULLIF(LTRIM(RTRIM(TipoIncidencia)), '') IS NOT NULL;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "TipoDescripcion",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TipoDescripcion",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "TBL_TEMP_Incidencia",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "D_TipoIncidencia",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "DimDetalleIncidencia",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DimTipoIncidencia",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "dbo.StgIncidencias"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.DimDetalleIncidencia"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT DISTINCT\n    LTRIM(RTRIM(CategoriaProblema)) AS CategoriaIncidencia,\n    LTRIM(RTRIM(Descripcion)) AS Descripcion\nFROM dbo.StgIncidencias\nWHERE NULLIF(LTRIM(RTRIM(CategoriaProblema)), '') IS NOT NULL\n   OR NULLIF(LTRIM(RTRIM(Descripcion)), '') IS NOT NULL;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "CategoriaIncidencia",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "CategoriaIncidencia",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Descripcion",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Descripcion",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "TBL_TEMP_Incidencia",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "D_DimDetalleIncidencia",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "DimOrigenIncidencia",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DimDetalleIncidencia",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "dbo.StgIncidencias"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.DimOrigenIncidencia"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT DISTINCT\n    LTRIM(RTRIM(OrigenTipo)) AS Origen\nFROM dbo.StgIncidencias\nWHERE NULLIF(LTRIM(RTRIM(OrigenTipo)), '') IS NOT NULL;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Origen",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Origen",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "TBL_TEMP_Incidencia",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "D_DimOrigenIncidencia",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "DimProductoPreferido",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DimOrigenIncidencia",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "dbo.StgEncuestaSatisfaccion"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.DimProductoPreferido"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT DISTINCT\n    LTRIM(RTRIM(valor)) AS NombreProducto\nFROM dbo.StgEncuestaSatisfaccion\nCROSS APPLY STRING_SPLIT(ProductosFrecuentes, ',') AS p\nCROSS APPLY (SELECT p.value AS valor) AS separado\nWHERE NULLIF(LTRIM(RTRIM(valor)), '') IS NOT NULL;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "NombreProducto",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "NombreProducto",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "TBL_TEMP_Encuesta",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "D_DimPreferenciaProducto",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "FactIncidencia",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DFT_FactIncidencia",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": []
+	}
+}

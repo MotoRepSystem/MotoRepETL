@@ -1,0 +1,26 @@
+{
+	"name": "D_TipoIncidencia",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MotoRep_DW",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "TipoDescripcion",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DimTipoIncidencia"
+		}
+	}
+}

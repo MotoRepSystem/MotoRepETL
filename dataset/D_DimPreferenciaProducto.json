@@ -1,0 +1,26 @@
+{
+	"name": "D_DimPreferenciaProducto",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MotoRep_DW",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "NombreProducto",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DimProductoPreferido"
+		}
+	}
+}

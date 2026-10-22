@@ -1,0 +1,72 @@
+{
+	"name": "D_FactIncidencia",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MotoRep_DW",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "MontoInvolucrado",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "Prioridad",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TieneEvidencia",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "IncidenciaID",
+				"type": "varchar"
+			},
+			{
+				"name": "idTipoIncidencia",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "idDetalleIncidencia",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "idCliente",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "idEmpleado",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "idTiempo",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "idOrigenIncidencia",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "FactIncidencias"
+		}
+	}
+}
