@@ -1,0 +1,76 @@
+{
+	"name": "D_FactEncuesta",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MotoRep_DW",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "SatisfaccionGeneral",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "AtencionPersonal",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Experiencia",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FacilidadEncontrarProductos",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "VariedadProductos",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CantidadComentarioServicio",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CantidadComentarioMejora",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "EncuestaID",
+				"type": "varchar"
+			},
+			{
+				"name": "idPreferenciaMarca",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "idCliente",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "idTiempo",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "FactEncuesta"
+		}
+	}
+}
