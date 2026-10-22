@@ -1,0 +1,19 @@
+{
+	"name": "DFT_Encuesta",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "Encuesta"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> Encuesta"
+			]
+		}
+	}
+}
