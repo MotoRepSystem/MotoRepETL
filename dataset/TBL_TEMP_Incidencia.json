@@ -1,0 +1,61 @@
+{
+	"name": "TBL_TEMP_Incidencia",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MotoRep_DW",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ObjectId",
+				"type": "varchar"
+			},
+			{
+				"name": "FechaRegistro",
+				"type": "varchar"
+			},
+			{
+				"name": "TipoIncidencia",
+				"type": "varchar"
+			},
+			{
+				"name": "OrigenTipo",
+				"type": "varchar"
+			},
+			{
+				"name": "ClienteID",
+				"type": "varchar"
+			},
+			{
+				"name": "CategoriaProblema",
+				"type": "varchar"
+			},
+			{
+				"name": "Descripcion",
+				"type": "varchar"
+			},
+			{
+				"name": "MontoInvolucrado",
+				"type": "varchar"
+			},
+			{
+				"name": "EmpleadoID",
+				"type": "varchar"
+			},
+			{
+				"name": "Prioridad",
+				"type": "varchar"
+			},
+			{
+				"name": "EvidenciaURL",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "StgIncidencias"
+		}
+	}
+}
