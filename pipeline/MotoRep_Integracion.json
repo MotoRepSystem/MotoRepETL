@@ -5,7 +5,14 @@
 			{
 				"name": "DimPreferenciaMarca",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Limpieza",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -484,6 +491,32 @@
 						"computeType": "General"
 					},
 					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Limpieza",
+				"type": "Script",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "MotoRep_DW",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "DELETE FROM DimProductoPreferido;\nDELETE FROM DimTipoIncidencia;\nDELETE FROM DimOrigenIncidencia;\nDELETE FROM DimDetalleIncidencia;\nDELETE FROM DimPreferenciaMarca;\n\nDBCC CHECKIDENT ('DimProductoPreferido', RESEED, 0);\nDBCC CHECKIDENT ('DimTipoIncidencia', RESEED, 0);\nDBCC CHECKIDENT ('DimOrigenIncidencia', RESEED, 0);\nDBCC CHECKIDENT ('DimDetalleIncidencia', RESEED, 0);\nDBCC CHECKIDENT ('DimPreferenciaMarca', RESEED, 0);\n\nTRUNCATE TABLE FactPreferenciaProducto;\nTRUNCATE TABLE FactEncuesta;\nTRUNCATE TABLE FactIncidencias"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
 				}
 			}
 		],
