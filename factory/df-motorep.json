@@ -1,0 +1,15 @@
+{
+	"name": "df-motorep",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "centralus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "09a84b26-d5ef-42ce-9f75-66e2fa283094",
+		"tenantId": "e47646fe-da27-4518-8436-5f8b158ba127"
+	}
+}
