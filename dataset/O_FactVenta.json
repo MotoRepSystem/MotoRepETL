@@ -2,7 +2,7 @@
 	"name": "O_FactVenta",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "MotoRepSystem_Conexion",
+			"referenceName": "New_MotoRepBD",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
