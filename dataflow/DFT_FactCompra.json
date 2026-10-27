@@ -7,7 +7,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "O_FactCompra",
+						"referenceName": "Origen_Dimensiones_System",
 						"type": "DatasetReference"
 					},
 					"name": "FactCompra"

@@ -2,7 +2,7 @@
 	"name": "D_DimProducto",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "MotoRep_DW",
+			"referenceName": "NEW_MotoRepDW",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],

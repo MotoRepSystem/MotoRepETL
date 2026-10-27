@@ -50,7 +50,7 @@
 				},
 				"userProperties": [],
 				"linkedServiceName": {
-					"referenceName": "MotoRep_DW",
+					"referenceName": "New_MotoRepBD",
 					"type": "LinkedServiceReference"
 				},
 				"typeProperties": {
@@ -82,7 +82,12 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": [],
+				"userProperties": [
+					{
+						"name": "Destination",
+						"value": "dbo.DimCliente"
+					}
+				],
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
@@ -140,13 +145,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Origen_DimCliente",
+						"referenceName": "Origen_Dimensiones_System",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "D_DimCliente",
+						"referenceName": "ND_Cliente",
 						"type": "DatasetReference"
 					}
 				]
@@ -170,7 +175,12 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": [],
+				"userProperties": [
+					{
+						"name": "Destination",
+						"value": "dbo.DimCondicionPago"
+					}
+				],
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
@@ -228,13 +238,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "O_DimCondicionPago",
+						"referenceName": "Origen_Dimensiones_System",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "D_DimCondicionPago",
+						"referenceName": "ND_CondicionPago",
 						"type": "DatasetReference"
 					}
 				]
@@ -258,7 +268,12 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": [],
+				"userProperties": [
+					{
+						"name": "Destination",
+						"value": "dbo.DimMetodoPago"
+					}
+				],
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
@@ -316,13 +331,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "O_DimMetodoPago",
+						"referenceName": "Origen_Dimensiones_System",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "D_DimMetodoPago",
+						"referenceName": "ND_MetodoPago",
 						"type": "DatasetReference"
 					}
 				]
@@ -346,7 +361,12 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": [],
+				"userProperties": [
+					{
+						"name": "Destination",
+						"value": "dbo.DimEmpleado"
+					}
+				],
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
@@ -404,13 +424,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "O_DimEmpleado",
+						"referenceName": "Origen_Dimensiones_System",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "D_DimEmpleado",
+						"referenceName": "ND_Empleado",
 						"type": "DatasetReference"
 					}
 				]
@@ -434,7 +454,12 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": [],
+				"userProperties": [
+					{
+						"name": "Destination",
+						"value": "dbo.DimProveedor"
+					}
+				],
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
@@ -492,13 +517,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "O_DimProveedor",
+						"referenceName": "Origen_Dimensiones_System",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "D_DimProveedor",
+						"referenceName": "ND_Proveedor",
 						"type": "DatasetReference"
 					}
 				]
@@ -522,7 +547,12 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": [],
+				"userProperties": [
+					{
+						"name": "Destination",
+						"value": "dbo.DimProducto"
+					}
+				],
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
@@ -652,13 +682,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "O_DimProducto",
+						"referenceName": "Origen_Dimensiones_System",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "D_DimProducto",
+						"referenceName": "ND_Producto",
 						"type": "DatasetReference"
 					}
 				]

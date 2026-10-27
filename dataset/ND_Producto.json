@@ -1,0 +1,55 @@
+{
+	"name": "ND_Producto",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "NEW_MotoRepDW",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "Producto",
+				"type": "varchar"
+			},
+			{
+				"name": "Categoria",
+				"type": "varchar"
+			},
+			{
+				"name": "MarcaProducto",
+				"type": "varchar"
+			},
+			{
+				"name": "Moto",
+				"type": "varchar"
+			},
+			{
+				"name": "MarcaMoto",
+				"type": "varchar"
+			},
+			{
+				"name": "Color",
+				"type": "varchar"
+			},
+			{
+				"name": "Tamaño",
+				"type": "varchar"
+			},
+			{
+				"name": "ProductoID",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DimProducto"
+		}
+	}
+}

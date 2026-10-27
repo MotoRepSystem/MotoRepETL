@@ -1,0 +1,12 @@
+{
+	"name": "Origen_Dimensiones_System",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "New_MotoRepBD",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
