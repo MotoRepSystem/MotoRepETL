@@ -6,6 +6,8 @@
 			{
 				"name": "Limpieza de tablas",
 				"type": "Script",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -16,14 +18,14 @@
 				},
 				"userProperties": [],
 				"linkedServiceName": {
-					"referenceName": "MotoRep_DW",
+					"referenceName": "NEW_MotoRepDW",
 					"type": "LinkedServiceReference"
 				},
 				"typeProperties": {
 					"scripts": [
 						{
 							"type": "Query",
-							"text": "\ntruncate table FactVenta;\ntruncate table FactCompra;\ntruncate table FactPago;\n\ndelete from DimCliente;\ndelete from DimCondicionPago;\ndelete from DimEmpleado;\ndelete from DimMetodoPago;\ndelete from DimProducto;\ndelete from DimProveedor;\ndelete from DimTiempo;\n\n\nDBCC CHECKIDENT ('DimCliente', RESEED, 0);\nDBCC CHECKIDENT ('DimCondicionPago', RESEED, 0);\nDBCC CHECKIDENT ('DimEmpleado', RESEED, 0);\nDBCC CHECKIDENT ('DimMetodoPago', RESEED, 0);\nDBCC CHECKIDENT ('DimProducto', RESEED, 0);\nDBCC CHECKIDENT ('DimProveedor', RESEED, 0);\n\n\n"
+							"text": "truncate table FactVenta;\ntruncate table FactCompra;\ntruncate table FactPago;\n\ndelete from DimCliente;\ndelete from DimCondicionPago;\ndelete from DimEmpleado;\ndelete from DimMetodoPago;\ndelete from DimProducto;\ndelete from DimProveedor;\ndelete from DimTiempo;\n\n\nDBCC CHECKIDENT ('DimCliente', RESEED, 0);\nDBCC CHECKIDENT ('DimCondicionPago', RESEED, 0);\nDBCC CHECKIDENT ('DimEmpleado', RESEED, 0);\nDBCC CHECKIDENT ('DimMetodoPago', RESEED, 0);\nDBCC CHECKIDENT ('DimProducto', RESEED, 0);\nDBCC CHECKIDENT ('DimProveedor', RESEED, 0)"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
@@ -50,14 +52,14 @@
 				},
 				"userProperties": [],
 				"linkedServiceName": {
-					"referenceName": "New_MotoRepBD",
+					"referenceName": "NEW_MotoRepDW",
 					"type": "LinkedServiceReference"
 				},
 				"typeProperties": {
 					"scripts": [
 						{
 							"type": "Query",
-							"text": "SET LANGUAGE Español;\n\nDECLARE @StartDate DATE = '2021-06-15';\nDECLARE @EndDate DATE = '2026-11-01';\n\nWITH ListaFechas AS (\n    SELECT @StartDate AS Fecha\n    UNION ALL\n    SELECT DATEADD(day, 1, Fecha)\n    FROM ListaFechas\n    WHERE Fecha < @EndDate\n)\n\nINSERT INTO DimTiempo (id, Fecha, Year, Mes, NombreMes, Trimestre, Dia, NombreDia)\nSELECT\n    YEAR(Fecha) * 10000 + MONTH(Fecha) * 100 + DAY(Fecha),\n    Fecha,\n    YEAR(Fecha),\n    MONTH(Fecha),\n    DATENAME(month, Fecha),\n    DATEPART(quarter, Fecha),\n    DAY(Fecha),             -- <-- Cambiado aquí para obtener el día del mes\n    DATENAME(weekday, Fecha)\nFROM ListaFechas\nOPTION (MAXRECURSION 0);"
+							"text": "SET LANGUAGE Español;\n\nDECLARE @StartDate DATE = '2021-06-15';\nDECLARE @EndDate DATE = '2026-11-01';\n\nWITH ListaFechas AS (\n    SELECT @StartDate AS Fecha\n    UNION ALL\n    SELECT DATEADD(day, 1, Fecha)\n    FROM ListaFechas\n    WHERE Fecha < @EndDate\n)\n\nINSERT INTO DimTiempo (id, Fecha, Year, Mes, NombreMes, Trimestre, Dia, NombreDia)\nSELECT\n    YEAR(Fecha) * 10000 + MONTH(Fecha) * 100 + DAY(Fecha),\n    Fecha,\n    YEAR(Fecha),\n    MONTH(Fecha),\n    DATENAME(month, Fecha),\n    DATEPART(quarter, Fecha),\n    DAY(Fecha),             -- <-- Cambiado aquí para obtener el día del mes\n    DATENAME(weekday, Fecha)\nFROM ListaFechas\nOPTION (MAXRECURSION 0)"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"

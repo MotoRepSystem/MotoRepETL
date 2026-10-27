@@ -1,0 +1,69 @@
+{
+	"name": "Encuesta_TBL_Temp",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "NEW_MotoRepDW_NoSQL",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ObjectId",
+				"type": "varchar"
+			},
+			{
+				"name": "ClienteID",
+				"type": "varchar"
+			},
+			{
+				"name": "FacturaID",
+				"type": "varchar"
+			},
+			{
+				"name": "FechaEncuesta",
+				"type": "varchar"
+			},
+			{
+				"name": "SatisfaccionGeneral",
+				"type": "varchar"
+			},
+			{
+				"name": "AtencionPersonal",
+				"type": "varchar"
+			},
+			{
+				"name": "ExperienciaCompra",
+				"type": "varchar"
+			},
+			{
+				"name": "FacilidadEncontrar",
+				"type": "varchar"
+			},
+			{
+				"name": "VariedadProductos",
+				"type": "varchar"
+			},
+			{
+				"name": "MarcaPreferida",
+				"type": "varchar"
+			},
+			{
+				"name": "ProductosFrecuentes",
+				"type": "varchar"
+			},
+			{
+				"name": "ComentarioServicio",
+				"type": "varchar"
+			},
+			{
+				"name": "ComentarioMejora",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "StgEncuestaSatisfaccion"
+		}
+	}
+}

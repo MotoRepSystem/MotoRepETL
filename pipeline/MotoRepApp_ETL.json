@@ -5,10 +5,17 @@
 			{
 				"name": "OrigenEncuesta",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "OrigenIncidencia",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
-					"retry": 0,
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
@@ -167,7 +174,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "TBL_TEMP_Encuesta",
+						"referenceName": "Encuesta_TBL_Temp",
 						"type": "DatasetReference"
 					}
 				]
@@ -178,21 +185,12 @@
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
-					"retry": 0,
+					"retry": 2,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": [
-					{
-						"name": "Source",
-						"value": "Incidencia"
-					},
-					{
-						"name": "Destination",
-						"value": "dbo.StgIncidencias"
-					}
-				],
+				"userProperties": [],
 				"typeProperties": {
 					"source": {
 						"type": "CosmosDbMongoDbApiSource",
@@ -200,13 +198,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"writeBehavior": "upsert",
-						"upsertSettings": {
-							"useTempDB": true,
-							"keys": [
-								"ObjectId"
-							]
-						},
+						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
 						"disableMetricsCollection": false
 					},
@@ -324,7 +316,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "TBL_TEMP_Incidencia",
+						"referenceName": "Incidencia_TBL_Temp",
 						"type": "DatasetReference"
 					}
 				]
