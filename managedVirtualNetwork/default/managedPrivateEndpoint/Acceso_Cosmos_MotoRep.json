@@ -1,7 +1,0 @@
-{
-	"name": "Acceso_Cosmos_MotoRep",
-	"properties": {
-		"privateLinkResourceId": "/subscriptions/6da783b5-a2eb-4b92-b61d-f6370394ff81/resourceGroups/ServidorBD/providers/Microsoft.DocumentDB/databaseAccounts/motorepappbd",
-		"groupId": "MongoDB"
-	}
-}
