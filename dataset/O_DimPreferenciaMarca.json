@@ -2,7 +2,7 @@
 	"name": "O_DimPreferenciaMarca",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "MotoRep_DW",
+			"referenceName": "NEW_MotoRepDW",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
