@@ -2,7 +2,7 @@
 	"name": "OrigenIncidencia",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "MotoRepApp_Conexion",
+			"referenceName": "NEW_MotoRep_NoSQL",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],

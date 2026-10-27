@@ -2,14 +2,14 @@
 	"name": "Origen_Encuesta",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "MotoRepApp_Conexion",
+			"referenceName": "NEW_MotoRep_NoSQL",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
 		"type": "CosmosDbMongoDbApiCollection",
 		"schema": [],
 		"typeProperties": {
-			"collection": "clientes"
+			"collection": "encuestas_satisfaccion"
 		}
 	}
 }

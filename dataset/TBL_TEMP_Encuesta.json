@@ -2,7 +2,7 @@
 	"name": "TBL_TEMP_Encuesta",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "MotoRep_DW",
+			"referenceName": "NEW_MotoRepDW_NoSQL",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],

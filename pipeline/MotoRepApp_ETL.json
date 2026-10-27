@@ -16,7 +16,7 @@
 				"userProperties": [
 					{
 						"name": "Source",
-						"value": "clientes"
+						"value": "encuestas_satisfaccion"
 					},
 					{
 						"name": "Destination",
@@ -40,66 +40,118 @@
 							{
 								"source": {
 									"path": "$['_id']['$oid']"
+								},
+								"sink": {
+									"name": "ObjectId",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['cliente_id']"
+								},
+								"sink": {
+									"name": "ClienteID",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['factura_id']"
+								},
+								"sink": {
+									"name": "FacturaID",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['fecha_encuesta']"
+								},
+								"sink": {
+									"name": "FechaEncuesta",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['satisfaccion_servicio']['satisfaccion_general']"
+								},
+								"sink": {
+									"name": "SatisfaccionGeneral",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['satisfaccion_servicio']['atencion_personal']"
+								},
+								"sink": {
+									"name": "AtencionPersonal",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['satisfaccion_servicio']['experiencia_compra']"
+								},
+								"sink": {
+									"name": "ExperienciaCompra",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['preferencias_uso']['facilidad_encontrar_producto']"
+								},
+								"sink": {
+									"name": "FacilidadEncontrar",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['preferencias_uso']['variedad_productos']"
+								},
+								"sink": {
+									"name": "VariedadProductos",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['preferencias_uso']['marca_preferida']"
+								},
+								"sink": {
+									"name": "MarcaPreferida",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['productos_frecuentes'][0]"
+								},
+								"sink": {
+									"name": "ProductosFrecuentes",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['comentario_servicio']"
+								},
+								"sink": {
+									"name": "ComentarioServicio",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"path": "$['comentario_mejora']"
+								},
+								"sink": {
+									"name": "ComentarioMejora",
+									"type": "String"
 								}
 							}
 						],
@@ -131,7 +183,16 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": [],
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "Incidencia"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.StgIncidencias"
+					}
+				],
 				"typeProperties": {
 					"source": {
 						"type": "CosmosDbMongoDbApiSource",
@@ -139,10 +200,121 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"ObjectId"
+							]
+						},
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['_id']['$oid']"
+								},
+								"sink": {
+									"name": "ObjectId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['fecha_registro']"
+								},
+								"sink": {
+									"name": "FechaRegistro",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['tipo_incidencia']"
+								},
+								"sink": {
+									"name": "TipoIncidencia",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['origen']['tipo']"
+								},
+								"sink": {
+									"name": "OrigenTipo",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['origen']['cliente_id']"
+								},
+								"sink": {
+									"name": "ClienteID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['detalle_incidencia']['categoria_problema']"
+								},
+								"sink": {
+									"name": "CategoriaProblema",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['detalle_incidencia']['descripcion']"
+								},
+								"sink": {
+									"name": "Descripcion",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['detalle_incidencia']['monto_involucrado']"
+								},
+								"sink": {
+									"name": "MontoInvolucrado",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['gestion']['empleado_id']"
+								},
+								"sink": {
+									"name": "EmpleadoID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['gestion']['prioridad']"
+								},
+								"sink": {
+									"name": "Prioridad",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['evidencia']['url']"
+								},
+								"sink": {
+									"name": "EvidenciaURL",
+									"type": "String"
+								}
+							}
+						]
+					}
 				},
 				"inputs": [
 					{
