@@ -2,7 +2,7 @@
 	"name": "O_FactPago",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "MotoRepSystem_Conexion",
+			"referenceName": "New_MotoRepBD",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
