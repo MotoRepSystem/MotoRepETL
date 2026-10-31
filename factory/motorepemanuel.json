@@ -1,0 +1,15 @@
+{
+	"name": "motorepemanuel",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "northcentralus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "69dfedbf-f104-4862-9198-8276758a8263",
+		"tenantId": "e47646fe-da27-4518-8436-5f8b158ba127"
+	}
+}
