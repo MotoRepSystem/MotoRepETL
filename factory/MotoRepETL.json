@@ -1,0 +1,15 @@
+{
+	"name": "MotoRepETL",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "spaincentral",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "e995deb6-53c9-405b-a6bb-a8b327caa69b",
+		"tenantId": "e47646fe-da27-4518-8436-5f8b158ba127"
+	}
+}
