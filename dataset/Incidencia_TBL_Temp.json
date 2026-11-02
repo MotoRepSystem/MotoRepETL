@@ -2,7 +2,7 @@
 	"name": "Incidencia_TBL_Temp",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "NEW_MotoRepDW_NoSQL",
+			"referenceName": "NEW_MotoRepDW",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
