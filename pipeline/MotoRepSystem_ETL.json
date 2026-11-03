@@ -754,6 +754,872 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "OrigenIncidencia",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "Incidencia"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.StgIncidencias"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "CosmosDbMongoDbApiSource",
+						"batchSize": 100
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"ObjectId"
+							]
+						},
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['_id']['$oid']"
+								},
+								"sink": {
+									"name": "ObjectId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['fecha_registro']"
+								},
+								"sink": {
+									"name": "FechaRegistro",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['tipo_incidencia']"
+								},
+								"sink": {
+									"name": "TipoIncidencia",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['origen']['tipo']"
+								},
+								"sink": {
+									"name": "OrigenTipo",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['origen']['cliente_id']"
+								},
+								"sink": {
+									"name": "ClienteID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['detalle_incidencia']['categoria_problema']"
+								},
+								"sink": {
+									"name": "CategoriaProblema",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['detalle_incidencia']['descripcion']"
+								},
+								"sink": {
+									"name": "Descripcion",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['detalle_incidencia']['monto_involucrado']"
+								},
+								"sink": {
+									"name": "MontoInvolucrado",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['gestion']['empleado_id']"
+								},
+								"sink": {
+									"name": "EmpleadoID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['gestion']['prioridad']"
+								},
+								"sink": {
+									"name": "Prioridad",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['evidencia']['url']"
+								},
+								"sink": {
+									"name": "EvidenciaURL",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "OrigenIncidencia",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Incidencia_TBL_Temp",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "OrigenEncuesta",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "OrigenIncidencia",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "encuestas_satisfaccion"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.StgEncuestaSatisfaccion"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "CosmosDbMongoDbApiSource",
+						"batchSize": 100
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"ObjectId"
+							]
+						},
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['_id']['$oid']"
+								},
+								"sink": {
+									"name": "ObjectId",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['cliente_id']"
+								},
+								"sink": {
+									"name": "ClienteID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['factura_id']"
+								},
+								"sink": {
+									"name": "FacturaID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['fecha_encuesta']"
+								},
+								"sink": {
+									"name": "FechaEncuesta",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['satisfaccion_servicio']['satisfaccion_general']"
+								},
+								"sink": {
+									"name": "SatisfaccionGeneral",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['satisfaccion_servicio']['atencion_personal']"
+								},
+								"sink": {
+									"name": "AtencionPersonal",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['satisfaccion_servicio']['experiencia_compra']"
+								},
+								"sink": {
+									"name": "ExperienciaCompra",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['preferencias_uso']['facilidad_encontrar_producto']"
+								},
+								"sink": {
+									"name": "FacilidadEncontrar",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['preferencias_uso']['variedad_productos']"
+								},
+								"sink": {
+									"name": "VariedadProductos",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['preferencias_uso']['marca_preferida']"
+								},
+								"sink": {
+									"name": "MarcaPreferida",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['productos_frecuentes'][0]"
+								},
+								"sink": {
+									"name": "ProductosFrecuentes",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['comentario_servicio']"
+								},
+								"sink": {
+									"name": "ComentarioServicio",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['comentario_mejora']"
+								},
+								"sink": {
+									"name": "ComentarioMejora",
+									"type": "String"
+								}
+							}
+						],
+						"collectionReference": "",
+						"mapComplexValuesToString": false
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Origen_Encuesta",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Encuesta_TBL_Temp",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "DimPreferenciaMarca",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "OrigenEncuesta",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "dbo.StgEncuestaSatisfaccion"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.DimPreferenciaMarca"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT DISTINCT\n    LTRIM(RTRIM(MarcaPreferida)) AS Marcas\nFROM dbo.StgEncuestaSatisfaccion\nWHERE NULLIF(LTRIM(RTRIM(MarcaPreferida)), '') IS NOT NULL;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"Marcas"
+							]
+						},
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Marcas",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Marcas",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "TBL_TEMP_Encuesta",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "O_DimPreferenciaMarca",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "DimTipoIncidencia",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DimPreferenciaMarca",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "dbo.StgIncidencias"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.DimTipoIncidencia"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT DISTINCT\n    LTRIM(RTRIM(TipoIncidencia)) AS TipoDescripcion\nFROM dbo.StgIncidencias\nWHERE NULLIF(LTRIM(RTRIM(TipoIncidencia)), '') IS NOT NULL;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"TipoDescripcion"
+							]
+						},
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "TipoDescripcion",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TipoDescripcion",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "TBL_TEMP_Incidencia",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "D_TipoIncidencia",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "DimDetalleIncidencia",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DimTipoIncidencia",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "dbo.StgIncidencias"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.DimDetalleIncidencia"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT DISTINCT\n    LTRIM(RTRIM(CategoriaProblema)) AS CategoriaIncidencia,\n    LTRIM(RTRIM(Descripcion)) AS Descripcion\nFROM dbo.StgIncidencias\nWHERE NULLIF(LTRIM(RTRIM(CategoriaProblema)), '') IS NOT NULL\n   OR NULLIF(LTRIM(RTRIM(Descripcion)), '') IS NOT NULL;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"CategoriaIncidencia"
+							]
+						},
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "CategoriaIncidencia",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "CategoriaIncidencia",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Descripcion",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Descripcion",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "TBL_TEMP_Incidencia",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "D_DimDetalleIncidencia",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "DimOrigenIncidencia",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DimDetalleIncidencia",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "dbo.StgIncidencias"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.DimOrigenIncidencia"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT DISTINCT\n    LTRIM(RTRIM(OrigenTipo)) AS Origen\nFROM dbo.StgIncidencias\nWHERE NULLIF(LTRIM(RTRIM(OrigenTipo)), '') IS NOT NULL;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"Origen"
+							]
+						},
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Origen",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Origen",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "TBL_TEMP_Incidencia",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "D_DimOrigenIncidencia",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "DimProductoPreferido",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DimOrigenIncidencia",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "dbo.StgEncuestaSatisfaccion"
+					},
+					{
+						"name": "Destination",
+						"value": "dbo.DimProductoPreferido"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT DISTINCT\n    LTRIM(RTRIM(valor)) AS NombreProducto\nFROM dbo.StgEncuestaSatisfaccion\nCROSS APPLY STRING_SPLIT(ProductosFrecuentes, ',') AS p\nCROSS APPLY (SELECT p.value AS valor) AS separado\nWHERE NULLIF(LTRIM(RTRIM(valor)), '') IS NOT NULL;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"NombreProducto"
+							]
+						},
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "NombreProducto",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "NombreProducto",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "TBL_TEMP_Encuesta",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "D_DimPreferenciaProducto",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "FactIncidencia",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "DimProductoPreferido",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DFT_FactIncidencia",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "FactEncuesta",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "DimProductoPreferido",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DFT_FactEncuesta",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "FactPreferenciaProducto",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "DimProductoPreferido",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DFT_FcatPreferenciaProducto",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"annotations": []
