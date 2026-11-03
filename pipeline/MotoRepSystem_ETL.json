@@ -4,45 +4,10 @@
 		"description": "Carga de las dimensiones de MotoRep Sistema Web",
 		"activities": [
 			{
-				"name": "Limpieza de tablas",
-				"type": "Script",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"linkedServiceName": {
-					"referenceName": "NEW_MotoRepDW",
-					"type": "LinkedServiceReference"
-				},
-				"typeProperties": {
-					"scripts": [
-						{
-							"type": "Query",
-							"text": "truncate table FactVenta;\ntruncate table FactCompra;\ntruncate table FactPago;\n\ndelete from DimCliente;\ndelete from DimCondicionPago;\ndelete from DimEmpleado;\ndelete from DimMetodoPago;\ndelete from DimProducto;\ndelete from DimProveedor;\ndelete from DimTiempo;\n\n\nDBCC CHECKIDENT ('DimCliente', RESEED, 0);\nDBCC CHECKIDENT ('DimCondicionPago', RESEED, 0);\nDBCC CHECKIDENT ('DimEmpleado', RESEED, 0);\nDBCC CHECKIDENT ('DimMetodoPago', RESEED, 0);\nDBCC CHECKIDENT ('DimProducto', RESEED, 0);\nDBCC CHECKIDENT ('DimProveedor', RESEED, 0)"
-						}
-					],
-					"scriptBlockExecutionTimeout": "02:00:00"
-				}
-			},
-			{
 				"name": "DimTiempo",
 				"description": "Carga de datos de la dimensión Tiempo",
 				"type": "Script",
-				"dependsOn": [
-					{
-						"activity": "Limpieza de tablas",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
