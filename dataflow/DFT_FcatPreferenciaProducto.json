@@ -78,7 +78,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     query: 'SELECT\\n    ObjectId,\\n    ClienteID,\\n    CONVERT(VARCHAR(10),\\n        TRY_CONVERT(DATETIME2, FechaEncuesta), 23\\n    ) AS FechaEncuesta,\\n    ProductosFrecuentes\\nFROM dbo.StgEncuestaSatisfaccion',",
+				"     query: 'SELECT\\n    ObjectId,\\n    ClienteID,\\n    CONVERT(VARCHAR(10),\\n        TRY_CONVERT(DATETIME2, FechaEncuesta, 103), 23\\n    ) AS FechaEncuesta,\\n    ProductosFrecuentes\\nFROM dbo.StgEncuestaSatisfaccion',",
 				"     format: 'query') ~> FactPreferenciaProducto",
 				"source(output(",
 				"          id as long,",

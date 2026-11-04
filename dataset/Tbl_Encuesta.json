@@ -1,10 +1,6 @@
 {
 	"name": "Tbl_Encuesta",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "MotoRep_DW_NoSQL",
-			"type": "LinkedServiceReference"
-		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [

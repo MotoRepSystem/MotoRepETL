@@ -88,7 +88,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     query: 'SELECT\\n    ObjectId,\\n    ClienteID,\\n    CONVERT(VARCHAR(10), TRY_CONVERT(DATETIME2, FechaEncuesta), 23) AS FechaEncuesta,\\n    SatisfaccionGeneral,\\n    AtencionPersonal,\\n    ExperienciaCompra,\\n    FacilidadEncontrar,\\n    VariedadProductos,\\n    MarcaPreferida,\\n    ComentarioServicio,\\n    ComentarioMejora\\nFROM dbo.StgEncuestaSatisfaccion',",
+				"     query: 'SELECT\\n    ObjectId,\\n    ClienteID,\\n    CONVERT(VARCHAR(10), TRY_CONVERT(DATETIME2, FechaEncuesta, 103), 23) AS FechaEncuesta,\\n    SatisfaccionGeneral,\\n    AtencionPersonal,\\n    ExperienciaCompra,\\n    FacilidadEncontrar,\\n    VariedadProductos,\\n    MarcaPreferida,\\n    ComentarioServicio,\\n    ComentarioMejora\\nFROM dbo.StgEncuestaSatisfaccion',",
 				"     format: 'query') ~> FactEncuesta",
 				"source(output(",
 				"          id as long,",

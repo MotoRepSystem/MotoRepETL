@@ -1,10 +1,6 @@
 {
 	"name": "Origen_Encuesta_Mejorado",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "MotoRep_MongoDB",
-			"type": "LinkedServiceReference"
-		},
 		"annotations": [],
 		"type": "CosmosDbMongoDbApiCollection",
 		"schema": [],

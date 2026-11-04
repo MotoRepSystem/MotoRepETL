@@ -7,6 +7,8 @@
 				"name": "DimTiempo",
 				"description": "Carga de datos de la dimensión Tiempo",
 				"type": "Script",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -34,6 +36,8 @@
 				"name": "DimCliente",
 				"description": "Carga de datos de la dimensión Cliente",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DimTiempo",
@@ -127,6 +131,8 @@
 				"name": "DimCondicionPago",
 				"description": "Carga de datos de la dimensión Condición de pago",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DimCliente",
@@ -220,6 +226,8 @@
 				"name": "DimMetodoPago",
 				"description": "Carga de la dimensión MetodoPago",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DimCondicionPago",
@@ -313,6 +321,8 @@
 				"name": "DimEmpleado",
 				"description": "Carga de la Dimensión Empleado",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DimMetodoPago",
@@ -406,6 +416,8 @@
 				"name": "DimProveedor",
 				"description": "Carga de la dimensión Proveedor",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DimEmpleado",
@@ -499,6 +511,8 @@
 				"name": "DimProducto",
 				"description": "Carga de la dimensión Producto",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DimProveedor",
@@ -664,6 +678,8 @@
 				"name": "FactCompra",
 				"description": "Carga de la tabla de hechos Compra",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DimProducto",
@@ -696,6 +712,8 @@
 				"name": "FactVenta",
 				"description": "Tabla de hechos de ventas",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DimProducto",
@@ -727,6 +745,8 @@
 			{
 				"name": "FactPago",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DimProducto",
@@ -758,6 +778,8 @@
 			{
 				"name": "OrigenIncidencia",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -915,6 +937,8 @@
 			{
 				"name": "OrigenEncuesta",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "OrigenIncidencia",
@@ -933,7 +957,7 @@
 				"userProperties": [
 					{
 						"name": "Source",
-						"value": "encuestas_satisfaccion"
+						"value": "Encuesta"
 					},
 					{
 						"name": "Destination",
@@ -1099,6 +1123,8 @@
 			{
 				"name": "DimPreferenciaMarca",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "OrigenEncuesta",
@@ -1183,6 +1209,8 @@
 			{
 				"name": "DimTipoIncidencia",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DimPreferenciaMarca",
@@ -1267,6 +1295,8 @@
 			{
 				"name": "DimDetalleIncidencia",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DimTipoIncidencia",
@@ -1363,6 +1393,8 @@
 			{
 				"name": "DimOrigenIncidencia",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DimDetalleIncidencia",
@@ -1447,6 +1479,8 @@
 			{
 				"name": "DimProductoPreferido",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DimOrigenIncidencia",
