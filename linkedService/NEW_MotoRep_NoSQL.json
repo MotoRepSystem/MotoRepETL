@@ -9,7 +9,7 @@
 			"account": "UserAdmin",
 			"database": "MotoRep-NoSql-Database",
 			"isServerVersionAbove32": true,
-			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIyZDM0OThmOC04NDEwLTQyNGItYjExOS0xYTc0ZmQ3ZjA0MGYiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJhYTM1NjE5OC02NmM4LTQ3NGQtOTgyYy0yNTRjNTg1NmQ4YzkiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
 		},
 		"connectVia": {
 			"referenceName": "integrationRuntime1",
