@@ -1,0 +1,15 @@
+{
+	"name": "MotoRepETL2",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "westus2",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "33f2f3c4-23d1-4c9e-95ec-863e8ecff85f",
+		"tenantId": "e47646fe-da27-4518-8436-5f8b158ba127"
+	}
+}
