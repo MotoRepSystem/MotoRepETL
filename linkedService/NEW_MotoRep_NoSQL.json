@@ -5,11 +5,11 @@
 		"annotations": [],
 		"type": "CosmosDbMongoDbApi",
 		"typeProperties": {
-			"connectionString": "mongodb+srv://UserAdmin:@motorepapp.global.mongocluster.cosmos.azure.com/?authMechanism=SCRAM-SHA-256;maxIdleTime=2m;retryWrites=false",
+			"connectionString": "mongodb+srv://UserAdmin:@motorepeapp.global.mongocluster.cosmos.azure.com/?authMechanism=SCRAM-SHA-256;maxIdleTime=2m;retryWrites=false",
 			"account": "UserAdmin",
 			"database": "MotoRep-NoSql-Database",
 			"isServerVersionAbove32": true,
-			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIyYmNmYjVmZS0wYmJkLTQxNDQtOTE5Yy04YTg1ZWYyNTE2MTYiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI0NDBkNzZjZC1hNDZhLTRiMWItYTk0YS1jZGEyMzk0OWY2MWUiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
 		},
 		"connectVia": {
 			"referenceName": "integrationRuntime2",
