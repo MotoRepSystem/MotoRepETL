@@ -7,8 +7,6 @@
 				"name": "DimTiempo",
 				"description": "Carga de datos de la dimensión Tiempo",
 				"type": "Script",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -26,7 +24,7 @@
 					"scripts": [
 						{
 							"type": "Query",
-							"text": "SET LANGUAGE Español;\n\nDECLARE @StartDate DATE = '2021-06-15';\nDECLARE @EndDate DATE = '2026-11-01';\n\nWITH ListaFechas AS (\n    SELECT @StartDate AS Fecha\n    UNION ALL\n    SELECT DATEADD(day, 1, Fecha)\n    FROM ListaFechas\n    WHERE Fecha < @EndDate\n)\n\nINSERT INTO DimTiempo (id, Fecha, Year, Mes, NombreMes, Trimestre, Dia, NombreDia)\nSELECT\n    YEAR(Fecha) * 10000 + MONTH(Fecha) * 100 + DAY(Fecha),\n    Fecha,\n    YEAR(Fecha),\n    MONTH(Fecha),\n    DATENAME(month, Fecha),\n    DATEPART(quarter, Fecha),\n    DAY(Fecha),\n    DATENAME(weekday, Fecha)\nFROM ListaFechas AS L\nWHERE NOT EXISTS (\n    SELECT 1 \n    FROM DimTiempo AS T \n    WHERE T.id = YEAR(L.Fecha) * 10000 + MONTH(L.Fecha) * 100 + DAY(L.Fecha)\n)\nOPTION (MAXRECURSION 0);"
+							"text": "SET LANGUAGE Español;\n\nDECLARE @StartDate DATE = '2021-06-15';\nDECLARE @EndDate DATE = '2026-12-31';\n\nWITH ListaFechas AS (\n    SELECT @StartDate AS Fecha\n    UNION ALL\n    SELECT DATEADD(day, 1, Fecha)\n    FROM ListaFechas\n    WHERE Fecha < @EndDate\n)\n\nINSERT INTO DimTiempo (id, Fecha, Year, Mes, NombreMes, Trimestre, Dia, NombreDia)\nSELECT\n    YEAR(Fecha) * 10000 + MONTH(Fecha) * 100 + DAY(Fecha),\n    Fecha,\n    YEAR(Fecha),\n    MONTH(Fecha),\n    DATENAME(month, Fecha),\n    DATEPART(quarter, Fecha),\n    DAY(Fecha),\n    DATENAME(weekday, Fecha)\nFROM ListaFechas AS L\nWHERE NOT EXISTS (\n    SELECT 1 \n    FROM DimTiempo AS T \n    WHERE T.id = YEAR(L.Fecha) * 10000 + MONTH(L.Fecha) * 100 + DAY(L.Fecha)\n)\nOPTION (MAXRECURSION 0);"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
@@ -36,16 +34,7 @@
 				"name": "DimCliente",
 				"description": "Carga de datos de la dimensión Cliente",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "DimTiempo",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -131,16 +120,7 @@
 				"name": "DimCondicionPago",
 				"description": "Carga de datos de la dimensión Condición de pago",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "DimCliente",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -226,16 +206,7 @@
 				"name": "DimMetodoPago",
 				"description": "Carga de la dimensión MetodoPago",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "DimCondicionPago",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -321,16 +292,7 @@
 				"name": "DimEmpleado",
 				"description": "Carga de la Dimensión Empleado",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "DimMetodoPago",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -416,16 +378,7 @@
 				"name": "DimProveedor",
 				"description": "Carga de la dimensión Proveedor",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "DimEmpleado",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -511,16 +464,7 @@
 				"name": "DimProducto",
 				"description": "Carga de la dimensión Producto",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "DimProveedor",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -675,462 +619,9 @@
 				]
 			},
 			{
-				"name": "FactCompra",
-				"description": "Carga de la tabla de hechos Compra",
-				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "DimProducto",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "DFT_FactCompra",
-						"type": "DataFlowReference"
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			},
-			{
-				"name": "FactVenta",
-				"description": "Tabla de hechos de ventas",
-				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "DimProducto",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "DFT_FactVenta",
-						"type": "DataFlowReference"
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			},
-			{
-				"name": "FactPago",
-				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "DimProducto",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "FactPago",
-						"type": "DataFlowReference"
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			},
-			{
-				"name": "OrigenIncidencia",
-				"type": "Copy",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 2,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [
-					{
-						"name": "Source",
-						"value": "Incidencia"
-					},
-					{
-						"name": "Destination",
-						"value": "dbo.StgIncidencias"
-					}
-				],
-				"typeProperties": {
-					"source": {
-						"type": "CosmosDbMongoDbApiSource",
-						"batchSize": 100
-					},
-					"sink": {
-						"type": "AzureSqlSink",
-						"writeBehavior": "upsert",
-						"upsertSettings": {
-							"useTempDB": true,
-							"keys": [
-								"ObjectId"
-							]
-						},
-						"sqlWriterUseTableLock": false,
-						"disableMetricsCollection": false
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"path": "$['_id']['$oid']"
-								},
-								"sink": {
-									"name": "ObjectId",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['fecha_registro']"
-								},
-								"sink": {
-									"name": "FechaRegistro",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['tipo_incidencia']"
-								},
-								"sink": {
-									"name": "TipoIncidencia",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['origen']['tipo']"
-								},
-								"sink": {
-									"name": "OrigenTipo",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['origen']['cliente_id']"
-								},
-								"sink": {
-									"name": "ClienteID",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['detalle_incidencia']['categoria_problema']"
-								},
-								"sink": {
-									"name": "CategoriaProblema",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['detalle_incidencia']['descripcion']"
-								},
-								"sink": {
-									"name": "Descripcion",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['detalle_incidencia']['monto_involucrado']"
-								},
-								"sink": {
-									"name": "MontoInvolucrado",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['gestion']['empleado_id']"
-								},
-								"sink": {
-									"name": "EmpleadoID",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['gestion']['prioridad']"
-								},
-								"sink": {
-									"name": "Prioridad",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['evidencia']['url']"
-								},
-								"sink": {
-									"name": "EvidenciaURL",
-									"type": "String"
-								}
-							}
-						]
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "OrigenIncidencia",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "Incidencia_TBL_Temp",
-						"type": "DatasetReference"
-					}
-				]
-			},
-			{
-				"name": "OrigenEncuesta",
-				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "OrigenIncidencia",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 2,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [
-					{
-						"name": "Source",
-						"value": "Encuesta"
-					},
-					{
-						"name": "Destination",
-						"value": "dbo.StgEncuestaSatisfaccion"
-					}
-				],
-				"typeProperties": {
-					"source": {
-						"type": "CosmosDbMongoDbApiSource",
-						"batchSize": 100
-					},
-					"sink": {
-						"type": "AzureSqlSink",
-						"writeBehavior": "upsert",
-						"upsertSettings": {
-							"useTempDB": true,
-							"keys": [
-								"ObjectId"
-							]
-						},
-						"sqlWriterUseTableLock": false,
-						"disableMetricsCollection": false
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"path": "$['_id']['$oid']"
-								},
-								"sink": {
-									"name": "ObjectId",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['cliente_id']"
-								},
-								"sink": {
-									"name": "ClienteID",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['factura_id']"
-								},
-								"sink": {
-									"name": "FacturaID",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['fecha_encuesta']"
-								},
-								"sink": {
-									"name": "FechaEncuesta",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['satisfaccion_servicio']['satisfaccion_general']"
-								},
-								"sink": {
-									"name": "SatisfaccionGeneral",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['satisfaccion_servicio']['atencion_personal']"
-								},
-								"sink": {
-									"name": "AtencionPersonal",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['satisfaccion_servicio']['experiencia_compra']"
-								},
-								"sink": {
-									"name": "ExperienciaCompra",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['preferencias_uso']['facilidad_encontrar_producto']"
-								},
-								"sink": {
-									"name": "FacilidadEncontrar",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['preferencias_uso']['variedad_productos']"
-								},
-								"sink": {
-									"name": "VariedadProductos",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['preferencias_uso']['marca_preferida']"
-								},
-								"sink": {
-									"name": "MarcaPreferida",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['productos_frecuentes'][0]"
-								},
-								"sink": {
-									"name": "ProductosFrecuentes",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['comentario_servicio']"
-								},
-								"sink": {
-									"name": "ComentarioServicio",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['comentario_mejora']"
-								},
-								"sink": {
-									"name": "ComentarioMejora",
-									"type": "String"
-								}
-							}
-						],
-						"collectionReference": "",
-						"mapComplexValuesToString": false
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "Origen_Encuesta",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "Encuesta_TBL_Temp",
-						"type": "DatasetReference"
-					}
-				]
-			},
-			{
 				"name": "DimPreferenciaMarca",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "OrigenEncuesta",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -1207,16 +698,7 @@
 			{
 				"name": "DimTipoIncidencia",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "DimPreferenciaMarca",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -1293,16 +775,7 @@
 			{
 				"name": "DimDetalleIncidencia",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "DimTipoIncidencia",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -1391,16 +864,7 @@
 			{
 				"name": "DimOrigenIncidencia",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "DimDetalleIncidencia",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -1477,16 +941,7 @@
 			{
 				"name": "DimProductoPreferido",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "DimOrigenIncidencia",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -1559,99 +1014,6 @@
 						"type": "DatasetReference"
 					}
 				]
-			},
-			{
-				"name": "FactIncidencia",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "DimProductoPreferido",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "DFT_FactIncidencia",
-						"type": "DataFlowReference"
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			},
-			{
-				"name": "FactEncuesta",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "DimProductoPreferido",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "DFT_FactEncuesta",
-						"type": "DataFlowReference"
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			},
-			{
-				"name": "FactPreferenciaProducto",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "DimProductoPreferido",
-						"dependencyConditions": [
-							"Completed"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "DFT_FcatPreferenciaProducto",
-						"type": "DataFlowReference"
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
 			}
 		],
 		"annotations": []
