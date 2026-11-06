@@ -1,5 +1,5 @@
 {
-	"name": "MotoRepSystem_ETL",
+	"name": "Carga de las dimensiones",
 	"properties": {
 		"description": "Carga de las dimensiones de MotoRep Sistema Web",
 		"activities": [
