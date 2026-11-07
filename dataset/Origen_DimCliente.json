@@ -1,10 +1,6 @@
 {
 	"name": "Origen_DimCliente",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "MotoRepSystem_Conexion",
-			"type": "LinkedServiceReference"
-		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [

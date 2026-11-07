@@ -806,7 +806,8 @@
 						"upsertSettings": {
 							"useTempDB": true,
 							"keys": [
-								"CategoriaIncidencia"
+								"CategoriaIncidencia",
+								"Descripcion"
 							]
 						},
 						"sqlWriterUseTableLock": false,
